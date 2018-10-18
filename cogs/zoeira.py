@@ -56,16 +56,17 @@ class Zoeira:
 
         await ctx.send(message)
     
-    @commands.command(name='suckitvekat')
+    @commands.command(name='fuckoffvekatwithyourbullshitportuguese')
     @commands.guild_only()
     @commands.cooldown(1, 600, commands.BucketType.guild)
     async def _vekat_suck(self, ctx):
         """Manda o vekat catar coquinhos."""
 
-        vekat = ctx.guild.get_member_named('vekat#7105')
+        vekat = ctx.guild.get_member(119819028414857217)
         
         if vekat is None:
-            pass
+            print('404 vekat not found')
+            return
 
         embed = discord.Embed(title='Friendly reminder')
         embed.set_image(url="https://cdn.discordapp.com/attachments/256903500536086538/413688750007123969/Screenshot_8.png")
