@@ -56,7 +56,7 @@ class Zoeira:
 
         await ctx.send(message)
     
-    @commands.command(name='fuckoffvekatwithyourbullshitportuguese')
+    @commands.command(name='shutupvekat')
     @commands.guild_only()
     @commands.cooldown(1, 600, commands.BucketType.guild)
     async def _vekat_suck(self, ctx):
