@@ -3,6 +3,7 @@ import private
 import os
 import sys
 import re
+import time
 from cogs import utilities
 from discord.ext import commands
 
@@ -29,6 +30,7 @@ blacklist = []
 # Create name filter
 name_filter = re.compile(r'discord\.gg/\S+', re.I)
 
+
 @bot.event
 async def on_ready():
     print('Logged in as: {}'.format(bot.user.name))
@@ -41,34 +43,34 @@ async def on_ready():
     # Removes the hitmeup role from everyone who has it
     guild = bot.guilds[0]
     role = discord.utils.get(guild.roles, name='hitmeup')
-    try: 
+    try:
         for member in role.members or []:
             await member.remove_roles(role)
             await member.send(utilities.Utilities.expired_role_msg)
     except AttributeError:
-        pass # Ignores this if no one has the hitmeup role
+        pass  # Ignores this if no one has the hitmeup role
 
     # Load blacklisted users
     try:
         with open(os.path.join(ROOT, 'blacklist.txt')) as f:
             blacklist = f.readlines()
-            blacklist = [i.strip() for i in blacklist] 
-            blacklist = [int(i) for i in blacklist] 
+            blacklist = [i.strip() for i in blacklist]
+            blacklist = [int(i) for i in blacklist]
             print('Blacklisted IDs: ')
             print(blacklist)
     except FileNotFoundError:
         with open(os.path.join(ROOT, 'blacklist.txt'), 'w') as f:
-           pass
+            pass
 
 
-# Check if user is not blacklisted         
+# Check if user is not blacklisted
 @bot.check
 def check_user(ctx):
     try:
         with open(os.path.join(ROOT, 'blacklist.txt')) as f:
             blacklist = f.readlines()
-            blacklist = [i.strip() for i in blacklist] 
-            blacklist = [int(i) for i in blacklist] 
+            blacklist = [i.strip() for i in blacklist]
+            blacklist = [int(i) for i in blacklist]
     except FileNotFoundError:
         pass
     return ctx.author.id not in blacklist
@@ -76,14 +78,23 @@ def check_user(ctx):
 
 @bot.event
 async def on_member_join(member):
-    general_channel = discord.utils.get(bot.get_all_channels(), name='general')
-    info_channel = discord.utils.get(bot.get_all_channels(), name='info')
+    mid = member.id
+    guild = member.guild
+
+    general_channel = discord.utils.get(
+        bot.get_all_channels(), name='comandos')
+    info_channel = discord.utils.get(bot.get_all_channels(), name='regras')
 
     member_name = str(member)
     if name_filter.findall(member_name):
         return await member.ban(reason="[zeca] banned for blacklisted name")
-    
-    welcome_message = 'Welcome, ' +  member.mention + '! ' + \
+
+    time.sleep(10)
+
+    if not guild.get_member(mid):
+        return
+
+    welcome_message = 'Welcome, ' + member.mention + '! ' + \
         'Please check out ' + info_channel.mention + ' to learn ' + \
         'about the server rules and cool stuff. :smile:'
     if general_channel is not None:
