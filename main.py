@@ -80,8 +80,8 @@ async def on_member_join(member):
     info_channel = discord.utils.get(bot.get_all_channels(), name='info')
 
     member_name = str(member)
-    if name_filter.findall(member_name) is not None:
-        return await member.ban(reason="[bot] banned for blacklisted name")
+    if name_filter.findall(member_name):
+        return await member.ban(reason="[zeca] banned for blacklisted name")
     
     welcome_message = 'Welcome, ' +  member.mention + '! ' + \
         'Please check out ' + info_channel.mention + ' to learn ' + \
