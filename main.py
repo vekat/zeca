@@ -94,9 +94,9 @@ async def on_member_join(member):
     if not guild.get_member(mid):
         return
 
-    welcome_message = 'Welcome, ' + member.mention + '! ' + \
-        'Please check out ' + info_channel.mention + ' to learn ' + \
-        'about the server rules and cool stuff. :smile:'
+    welcome_message = 'welcome, ' + member.mention + ' ! ' + \
+        'please check out ' + info_channel.mention + ' to learn ' + \
+        'about the server rules and cool stuff. :slight_smile:'
     if general_channel is not None:
         await general_channel.send(welcome_message)
 
