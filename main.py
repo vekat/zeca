@@ -81,13 +81,12 @@ async def on_member_join(member):
     mid = member.id
     guild = member.guild
 
-    general_channel = discord.utils.get(
-        bot.get_all_channels(), name='comandos')
-    info_channel = discord.utils.get(bot.get_all_channels(), name='regras')
-
     member_name = str(member)
     if name_filter.findall(member_name):
         return await member.ban(reason="[zeca] banned for blacklisted name")
+
+    general_channel = guild.get_channel(private.__welcome)
+    info_channel = guild.get_channel(private.__info)
 
     time.sleep(10)
 
@@ -97,7 +96,7 @@ async def on_member_join(member):
     welcome_message = 'welcome, ' + member.mention + ' ! ' + \
         'please check out ' + info_channel.mention + ' to learn ' + \
         'about the server rules and cool stuff. :slight_smile:'
-    if general_channel is not None:
+    if general_channel:
         await general_channel.send(welcome_message)
 
 
