@@ -1,4 +1,4 @@
 __TOKEN = 'your_token_here'
 __welcome = 10101010
 __info = 10101010
-__delay = 1800
+__delay = 180

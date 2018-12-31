@@ -4,6 +4,7 @@ import os
 import sys
 import re
 import time
+import asyncio
 from cogs import utilities
 from discord.ext import commands
 
@@ -88,7 +89,7 @@ async def on_member_join(member):
     general_channel = guild.get_channel(private.__welcome)
     info_channel = guild.get_channel(private.__info)
 
-    time.sleep(private.__delay)
+    await asyncio.sleep(private.__delay)
 
     if not guild.get_member(mid):
         return
