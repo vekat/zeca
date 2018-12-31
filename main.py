@@ -88,7 +88,7 @@ async def on_member_join(member):
     general_channel = guild.get_channel(private.__welcome)
     info_channel = guild.get_channel(private.__info)
 
-    time.sleep(10)
+    time.sleep(private.__delay)
 
     if not guild.get_member(mid):
         return
