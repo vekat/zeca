@@ -16,17 +16,21 @@ class Utilities:
 
     # Some commands variables are class properties, so it's easier
     # to access them from higher levels when needed.
-    expired_role_msg = 'Your role "hitmeup" role has ' + \
+    expired_role_msg = 'Your role "hit me up" role has ' + \
                        'expired. To renew the role type `>r hitmeup` ' + \
                        'in the bot_channel. Don\'t forget this role ' + \
                        'expires in one hour.\nThanks for being part of the ' + \
                        'Portuguese Learning and Discussion Community! :smile:'
 
-    level_roles = {'level a': 'Level A', 'level b': 'Level B', 'level c': 'Level C',
-                   'native': 'Native Speaker', 'native speaker': 'Native Speaker'}
+    level_roles = {'level 0': 'newbie', 'new': 'newbie', 'newbie': 'newbie',
+                   'level a': 'beginner', 'beginner': 'beginner',
+                   'level b': 'intermediate', 'intermediate': 'intermediate',
+                   'level c': 'advanced', 'advanced': 'advanced',
+                   'native': 'native', 'native speaker': 'native'}
     country_roles = {'pt': 'PT', 'br': 'BR', 'ao': 'AO', 'cv': 'CV', 'gq': 'GQ',
                      'gw': 'GW', 'mo': 'MO', 'mz': 'MZ', 'st': 'ST', 'tl': 'TL'}
-    other_roles = {'hitmeup': 'hitmeup', 'notify me': 'Notify me', 'correct me': 'Correct me'}
+    other_roles = {'hitmeup': 'hit me up', 'hit me up': 'hit me up',
+                   'notify me': 'notify me', 'correct me': 'correct me'}
     public_roles = {**level_roles, **country_roles, **other_roles}
 
     @commands.command(name='role', aliases=['r'])
@@ -37,7 +41,7 @@ class Utilities:
         If role is a level role (Level A, Level B, Level C, or Native),
         the previous level will be automatically removed.
 
-        The role 'hitmeup' expires after 1 hour.
+        The role 'hit me up' expires after 1 hour.
 
         Sub-command:
             list:  Shows a list of public roles.
@@ -58,7 +62,7 @@ class Utilities:
                 await member.add_roles(role)
                 await ctx.send(':white_check_mark: Role granted.')
                 # Schedules the hitmeup role expiration
-                if role.name == 'hitmeup':
+                if role.name == 'hit me up':
                     await asyncio.sleep(3600)
                     if role in member.roles:
                         await member.remove_roles(role)
@@ -66,7 +70,8 @@ class Utilities:
 
         elif role == 'list':
             output = 'Public roles available:\n' + '```' + \
-                     ', '.join(list(dict.fromkeys(self.public_roles.values()))) + '```'
+                     ', '.join(
+                         list(dict.fromkeys(self.public_roles.values()))) + '```'
             await ctx.send(output)
         else:
             raise commands.BadArgument
@@ -127,7 +132,7 @@ class Utilities:
 
         The definitions and examples might be in pre-1990 Agreement
         Portuguese. Make sure to check the footer for possible changes.
-        
+
         https://www.priberam.pt/
         https://en.wikipedia.org/wiki/Portuguese_Language_Orthographic_Agreement_of_1990
         """
@@ -136,15 +141,15 @@ class Utilities:
         t = results.table_of_contents[0]
         if t['affect']:
             output = output + '_Após o acordo ortográfico:_ **' + \
-                t['br_aft'] + '** 🇧🇷, **' +  t['pt_aft'] + '** 🇵🇹.\n'
+                t['br_aft'] + '** 🇧🇷, **' + t['pt_aft'] + '** 🇵🇹.\n'
         else:
             output = output + '_Grafias:_ **' + \
-                t['br_bef'] + '** 🇧🇷, **' +  t['pt_bef'] + '** 🇵🇹.\n'   
+                t['br_bef'] + '** 🇧🇷, **' + t['pt_bef'] + '** 🇵🇹.\n'
         await ctx.send(output)
 
     @_priberam.error
     async def __priberam_error(self, ctx, error):
-       await ctx.send(error.__cause__)
+        await ctx.send(error.__cause__)
 
     @commands.command()
     async def nick(self, ctx, *, new_nick):
@@ -158,7 +163,6 @@ class Utilities:
             # await ctx.send(error.__cause__)
             await ctx.send('I don\'t have permission for that, master.')
 
-    
     @commands.command(name='correct', aliases=['c'])
     async def _correct_message(self, ctx, message_id, *, correction):
         """
@@ -173,15 +177,15 @@ class Utilities:
         target_user = target_msg.author
 
         role = discord.utils.get(target_user.roles, name='Correct me')
-                
+
         if role is not None:
             mistakes, corrected = compare_texts(target_msg.content, correction)
             output = '{}, {} has corrected your message!\n{}\n{}\n'.format(
                 target_user.mention, ctx.author.display_name, mistakes, corrected)
             await ctx.send(output)
         else:
-            await ctx.send('The author of the message you want to correct ' + \
-            'must have a "Correct me" role.')
+            await ctx.send('The author of the message you want to correct ' +
+                           'must have a "Correct me" role.')
         await asyncio.sleep(3)
         await ctx.message.delete()
 
@@ -192,15 +196,15 @@ class Utilities:
         """
         query = UDQuery(entry)
         definition = query.definition
-        definition =  re.sub(r'[\[\]]', '', definition) # Remove [ and ] chars
+        definition = re.sub(r'[\[\]]', '', definition)  # Remove [ and ] chars
         embed = discord.Embed(title=query.entry,
-                                url=query.permalink,
-                                description=definition,
-                                color=0x3498DB)
+                              url=query.permalink,
+                              description=definition,
+                              color=0x3498DB)
         embed.set_footer(icon_url=query.favicon,
                          text=query.disclaimer)
         await ctx.send(embed=embed)
-       
+
 
 def setup(bot):
     bot.add_cog(Utilities(bot))
