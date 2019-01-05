@@ -21,12 +21,23 @@ class Utilities:
                        'in the bot_channel. Don\'t forget this role ' + \
                        'expires in one hour.\nThanks for being part of the ' + \
                        'Portuguese Learning and Discussion Community! :smile:'
+    level_roles_aliases = {
+        'newbie': ['0', 'a0', 'new'],
+        'beginner': ['a', 'a1', 'a2'],
+        'intermediate': ['b', 'b1', 'b2'],
+        'advanced': ['c', 'c1', 'c2'],
+        'native': ['native speaker']
+    }
 
-    level_roles = {'level 0': 'newbie', 'new': 'newbie', 'newbie': 'newbie',
-                   'level a': 'beginner', 'beginner': 'beginner',
-                   'level b': 'intermediate', 'intermediate': 'intermediate',
-                   'level c': 'advanced', 'advanced': 'advanced',
-                   'native': 'native', 'native speaker': 'native'}
+    level_roles = {}
+
+    for k, l in level_roles_aliases.items():
+        level_roles[k] = k
+        level_roles['level '+k] = k
+        for v in l:
+            level_roles[v] = k
+            level_roles['level '+v] = k
+
     country_roles = {'pt': 'PT', 'br': 'BR', 'ao': 'AO', 'cv': 'CV', 'gq': 'GQ',
                      'gw': 'GW', 'mo': 'MO', 'mz': 'MZ', 'st': 'ST', 'tl': 'TL'}
     other_roles = {'hitmeup': 'hit me up', 'hit me up': 'hit me up',
