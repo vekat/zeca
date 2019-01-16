@@ -87,16 +87,23 @@ async def on_member_join(member):
         return await member.ban(reason="[zeca] banned for blacklisted name")
 
     general_channel = guild.get_channel(private.__welcome)
-    info_channel = guild.get_channel(private.__info)
+    rules_channel = guild.get_channel(private.__rules)
+    roles_channel = guild.get_channel(private.__roles)
+    rooms_channel = guild.get_channel(private.__rooms)
 
     await asyncio.sleep(private.__delay)
 
     if not guild.get_member(mid):
         return
 
-    welcome_message = 'welcome, ' + member.mention + ' ! ' + \
-        'please check out ' + info_channel.mention + ' to learn ' + \
-        'about the server rules and cool stuff. :slight_smile:'
+    welcome_message = ':flag_gb: welcome ' + member.mention + ' ! :flag_us:\n' + \
+        'please use this waiting period to know:\n— our server rules in ' + rules_channel.mention + '\n— our server roles in ' + roles_channel.mention + '\n— our server chats in ' + rooms_channel.mention + '\n\n' + \
+        'when you are able to type, send commands here to get yourself a role\n' + \
+        '*you need a level role to use the other channels*\n\n' + \
+        ':flag_pt: seja bem-vindo(a) ! :flag_br:\n' + \
+        'por favor use este tempo para conhecer:\n— nossas regras em ' + rules_channel.mention + '\n— nossos cargos em ' + roles_channel.mention + '\n— nossos canais em ' + rooms_channel.mention + '\n\n' + \
+        'assim que puder digitar, envie comandos aqui para receber seus cargos\n' + \
+        '*você precisa de um cargo de nível para usar os outros canais*'
     if general_channel:
         await general_channel.send(welcome_message)
 
