@@ -97,7 +97,7 @@ async def on_member_join(member):
         return
 
     welcome_message = ':flag_gb: welcome ' + member.mention + ' ! :flag_us:\n' + \
-        'please use this waiting period to know about:\n— our server rules in ' + rules_channel.mention + '\n— our server roles in ' + roles_channel.mention + '\n— our server chats in ' + rooms_channel.mention + '\n\n' + \
+        'please use this waiting period to get to know about:\n— our server rules in ' + rules_channel.mention + '\n— our server roles in ' + roles_channel.mention + '\n— our server chats in ' + rooms_channel.mention + '\n\n' + \
         'when you are able to type, send commands here to get yourself a role\n' + \
         '*you need a level role to use the other channels*\n\n' + \
         ':flag_pt: seja bem-vindo(a) ! :flag_br:\n' + \
