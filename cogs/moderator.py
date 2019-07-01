@@ -14,11 +14,11 @@ class Moderator:
     @commands.command()
     async def blacklist(self, ctx, *, member: discord.Member):
         """Blacklists a user. Blacklisted users cannot use the bot."""
-        user = member.id 
+        user = member.id
         with open(os.path.join(ROOT, 'blacklist.txt')) as f:
             blacklist = f.readlines()
             blacklist = [i.strip() for i in blacklist]
-            blacklist = [int(i) for i in blacklist] 
+            blacklist = [int(i) for i in blacklist]
 
         if user in blacklist:
             blacklist.remove(user)
@@ -42,7 +42,7 @@ class Moderator:
         if not isinstance(ctx.channel, discord.abc.GuildChannel):
             return False
 
-        role = discord.utils.get(ctx.author.roles, name='Admin')
+        role = discord.utils.get(ctx.author.roles, name='admin')
         return role is not None
 
     async def __error(self, ctx, error):

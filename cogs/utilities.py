@@ -187,7 +187,7 @@ class Utilities:
         target_msg = await ctx.channel.get_message(message_id)
         target_user = target_msg.author
 
-        role = discord.utils.get(target_user.roles, name='Correct me')
+        role = discord.utils.get(target_user.roles, name='correct me')
 
         if role is not None:
             mistakes, corrected = compare_texts(target_msg.content, correction)
@@ -203,7 +203,7 @@ class Utilities:
     @commands.command(name='urbandictionary', aliases=['urban', 'ud'])
     async def _urbandictionary(self, ctx, *, entry):
         """
-        Look up a word in the Urban Dictionary. 
+        Look up a word in the Urban Dictionary.
         """
         query = UDQuery(entry)
         definition = query.definition
