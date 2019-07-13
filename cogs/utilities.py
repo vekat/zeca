@@ -16,11 +16,11 @@ class Utilities:
 
     # Some commands variables are class properties, so it's easier
     # to access them from higher levels when needed.
-    expired_role_msg = 'Your role "hit me up" role has ' + \
-                       'expired. To renew the role type `>r hitmeup` ' + \
-                       'in the bot_channel. Don\'t forget this role ' + \
-                       'expires in one hour.\nThanks for being part of the ' + \
-                       'Portuguese Learning and Discussion Community! :smile:'
+    expired_role_msg = 'your role "hit me up" role has ' + \
+                       'expired on the Portuguese server.\nto renew the role, type `>r hitmeup` ' + \
+                       'in the <#451912364183257089> channel.\ndon\'t forget this role ' + \
+                       'expires in one hour.\nthank you for being part of the ' + \
+                       'Portuguese learning and discussion community! :smile:'
     level_roles_aliases = {
         'newbie': ['0', 'a0', 'new'],
         'beginner': ['a', 'a1', 'a2'],
@@ -196,7 +196,7 @@ class Utilities:
             await ctx.send(output)
         else:
             await ctx.send('The author of the message you want to correct ' +
-                           'must have a "Correct me" role.')
+                           'must have a "correct me" role.')
         await asyncio.sleep(3)
         await ctx.message.delete()
 
