@@ -96,14 +96,10 @@ async def on_member_join(member):
     if not guild.get_member(mid):
         return
 
-    welcome_message = ':flag_gb: welcome ' + member.mention + ' ! :flag_us:\n' + \
-        'please use this waiting period to get to know about:\n— our server rules in ' + rules_channel.mention + '\n— our server roles in ' + roles_channel.mention + '\n— our server chats in ' + rooms_channel.mention + '\n\n' + \
-        'when you are able to type, send commands here to get yourself a role\n' + \
-        '*you need a level role to use the other channels*\n\n' + \
-        ':flag_pt: seja bem-vindo(a) ! :flag_br:\n' + \
-        'por favor use este tempo para conhecer:\n— nossas regras em ' + rules_channel.mention + '\n— nossos cargos em ' + roles_channel.mention + '\n— nossos canais em ' + rooms_channel.mention + '\n\n' + \
-        'assim que puder digitar, envie comandos aqui para receber seus cargos\n' + \
-        '*você precisa de um cargo de nível para usar os outros canais*'
+    welcome_message = 'welcome ' + member.mention + ' !\n' + \
+        'please use this waiting period to learn about our rules in ' + rules_channel.mention + '\n' + \
+        'when you are ready, get your roles in <#607329738012491793> and <#607330935133700146>\n' + \
+        'or type role commands here, as explained in ' + roles_channel.mention
     if general_channel:
         await general_channel.send(welcome_message)
 
