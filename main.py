@@ -102,7 +102,7 @@ async def on_member_join(member):
     embed.add_field(name="Getting started", value="• First get a proficiency role in <#607329738012491793>\n• Then an optional dialect role in <#607330935133700146>\n\nOr type role commands here, as explained in " + roles_channel.mention)
 
     if general_channel:
-        await general_channel.send(content="Hi @mention, welcome to **Portuguese**", embed=embed)
+        await general_channel.send(content="Hi " + member.mention + ", welcome to **Portuguese**", embed=embed)
 
 
 bot.run(private.__TOKEN)
