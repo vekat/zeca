@@ -5,6 +5,7 @@ import sys
 import re
 import time
 import asyncio
+from datetime import datetime
 from cogs import utilities
 from discord.ext import commands
 
@@ -96,12 +97,12 @@ async def on_member_join(member):
     if not guild.get_member(mid):
         return
 
-    welcome_message = 'welcome ' + member.mention + ' !\n' + \
-        'please use this waiting period to learn about our rules in ' + rules_channel.mention + '\n' + \
-        'when you are ready, get your roles in <#607329738012491793> and <#607330935133700146>\n' + \
-        'or type role commands here, as explained in ' + roles_channel.mention
+    embed = discord.Embed(title="<:pt:589471198107402240> While you wait...", colour=discord.Colour(0x9b3a), description="You might want to read our rules in " + rules_channel.mention, timestamp=datetime.utcfromtimestamp(time.time()))
+
+    embed.add_field(name="Getting started", value="• First get a proficiency role in <#607329738012491793>\n• Then an optional dialect role in <#607330935133700146>\n\nOr type role commands here, as explained in " + roles_channel.mention)
+
     if general_channel:
-        await general_channel.send(welcome_message)
+        await general_channel.send(content="Hi @mention, welcome to **Portuguese**", embed=embed)
 
 
 bot.run(private.__TOKEN)
