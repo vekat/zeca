@@ -191,7 +191,7 @@ class Utilities:
 
         if role is not None:
             mistakes, corrected = compare_texts(target_msg.content, correction)
-            output = '{}, {} has corrected your message!\n{}\n{}\n'.format(
+            output = '{}, {} has corrected your message!\n> {}\n{}\n'.format(
                 target_user.mention, ctx.author.display_name, mistakes, corrected)
             await ctx.send(output)
         else:
