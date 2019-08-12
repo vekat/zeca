@@ -20,27 +20,23 @@ class Zoeira:
         else:
             target = member.mention
 
-        if author == member.display_name:
-            message = ':hammer: | **' + author + \
-                ' has hammered their thumb. What a shame.**'
+        message = '> <:marreta:607695189410054332> **'
+
+        if ctx.author.id == member.id:
+            message += author + ' has hammered their thumb. What a shame.'
         if ctx.author.id == 119819028414857217:
-            message = '<:marreta:607695189410054332> | **' + target + \
-                ' levou uma marretada! ' + author + ' suspeitou desde o princípio**.'
+            message += target + ' levou uma marretada! ' + \
+                author + ' suspeitou desde o princípio.'
         elif author == 'fausthanos':
-            message = ':hammer: | **' + target + \
-                ' has been slain by Fausthanos, for the good of the Universe.**'
-
+            message += target + ' has been slain by Fausthanos, for the good of the Universe.'
         elif author == 'charon':
-            message = ':hammer: | ** Charon has made a dinner reservation for ' + \
-                target + '**'
-
+            message += 'Charon has made a dinner reservation for ' + target + '.'
         elif author == 'winston':
-            message = ':hammer: | ** Winston has acted upon ' + \
-                target + '\'s own actions.**'
-
+            message += 'Winston has acted upon ' + target + '\'s own actions.'
         else:
-            message = ':hammer: | **' + author + \
-                ' has banned ' + target + '**.'
+            message += author + ' has banned ' + target + '.'
+
+        message += '**'
 
         await ctx.send(message)
 
