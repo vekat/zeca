@@ -24,7 +24,7 @@ class Zoeira:
 
         if ctx.author.id == member.id:
             message += author + ' has hammered their thumb. What a shame.'
-        if ctx.author.id == 119819028414857217:
+        elif ctx.author.id == 119819028414857217:
             message += target + ' levou uma marretada! ' + \
                 author + ' suspeitou desde o princípio.'
         elif author == 'fausthanos':
