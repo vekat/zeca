@@ -30,12 +30,13 @@ class Query:
             raise ValueError('Entry must contain only' + \
                              ' alphanumeric characters and spaces.')
             
-        self.url = 'https://www.priberam.pt/dlpo/' + \
-                   _urlify(self.term) + '/'
-        r = requests.get(self.url)
+        self.url = 'https://dicionario.priberam.org/' + \
+                   _urlify(self.term)
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36'}
+        r = requests.get(self.url, headers=headers)
         self.code = r.status_code
         if self.code != 200:
-            raise Exception(str(r.status_code) + 'Error')
+            raise Exception('Error ' + str(r.status_code))
         self.content = r.content
 
 
