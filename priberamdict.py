@@ -53,8 +53,7 @@ class Entry(Query):
         super().__init__(term)
         soup = BeautifulSoup(self.content, 'html.parser')
         self.raw = soup.find('div', id='resultados')
-        if self.raw.find('div', class_='alert'):
-            raise ValueError('No results found.')
+        self._suggestions = self.raw.find('div', class_='pb-sugestoes-afastadas')
         
     @property
     def table_of_contents(self):
@@ -108,6 +107,8 @@ class Entry(Query):
         """
         Returns a list which contains all the definitions found.
         """
+        if self.raw.find('div', class_='alert'):
+            return None
         r = self.raw.find('div')
         r = r.find_all('div', recursive=False)[-1]
         for item in r.find_all('categoria_ext_aao'):
@@ -121,12 +122,23 @@ class Entry(Query):
         r = r.find_all('div', id='', class_='', recursive=False)
         r = list(map(_html_to_markdown, r))
         return r
+        
+    @property
+    def suggestions(self):
+        r = self._suggestions
+        if r == None:
+            return None
+        r = r.find_all('a')
+        r = [_html_to_markdown(v, False) for v in r]
+        r = [v.strip() for v in r]
+        return r
 
 
-def _html_to_markdown(value):
+def _html_to_markdown(value, ignore_images = True):
     h = html2text.HTML2Text()
     h.ignore_links = True
-    h.ignore_images = True
+    if ignore_images:
+        h.ignore_images = True
     return h.handle(str(value))
 
 
