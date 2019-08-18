@@ -125,6 +125,8 @@ class Entry(Query):
 
 def _html_to_markdown(value):
     h = html2text.HTML2Text()
+    h.ignore_links = True
+    h.ignore_images = True
     return h.handle(str(value))
 
 
