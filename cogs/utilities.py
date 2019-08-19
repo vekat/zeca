@@ -148,14 +148,25 @@ class Utilities:
         https://en.wikipedia.org/wiki/Portuguese_Language_Orthographic_Agreement_of_1990
         """
         results = priberamdict.Entry(entry)
-        output = results.definitions[0]
-        t = results.table_of_contents[0]
-        if t['affect']:
-            output = output + '_Após o acordo ortográfico:_ **' + \
-                t['br_aft'] + '** 🇧🇷, **' + t['pt_aft'] + '** 🇵🇹.\n'
-        else:
-            output = output + '_Grafias:_ **' + \
-                t['br_bef'] + '** 🇧🇷, **' + t['pt_bef'] + '** 🇵🇹.\n'
+        d = results.definitions
+        s = results.suggestions
+
+        if d:
+            output = d[0]
+            t = results.table_of_contents[0]
+            if t['affect']:
+                output = output + '_Após o acordo ortográfico:_ **' + \
+                    t['br_aft'] + '** 🇧🇷, **' + t['pt_aft'] + '** 🇵🇹.\n'
+            else:
+                output = output + '_Grafias:_ **' + \
+                    t['br_bef'] + '** 🇧🇷, **' + t['pt_bef'] + '** 🇵🇹.\n'
+
+        if isinstance(s, list):
+            output = 'Palavra não encontrada. '
+            if s:
+                output = output + 'Aqui estão algumas sugestões:\n'
+                output = output + ' '.join(s)
+
         await ctx.send(output)
 
     @_priberam.error
