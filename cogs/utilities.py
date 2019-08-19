@@ -150,10 +150,16 @@ class Utilities:
         results = priberamdict.Entry(entry)
         d = results.definitions
         s = results.suggestions
-        t = results.table_of_contents[0]
 
         if d:
             output = d[0]
+            t = results.table_of_contents[0]
+            if t['affect']:
+                output = output + '_Após o acordo ortográfico:_ **' + \
+                    t['br_aft'] + '** 🇧🇷, **' + t['pt_aft'] + '** 🇵🇹.\n'
+            else:
+                output = output + '_Grafias:_ **' + \
+                    t['br_bef'] + '** 🇧🇷, **' + t['pt_bef'] + '** 🇵🇹.\n'
 
         if isinstance(s, list):
             output = 'Palavra não encontrada. '
@@ -161,12 +167,6 @@ class Utilities:
                 output = output + 'Aqui estão algumas sugestões:\n'
                 output = output + ' '.join(s)
 
-        if t['affect']:
-            output = output + '_Após o acordo ortográfico:_ **' + \
-                t['br_aft'] + '** 🇧🇷, **' + t['pt_aft'] + '** 🇵🇹.\n'
-        else:
-            output = output + '_Grafias:_ **' + \
-                t['br_bef'] + '** 🇧🇷, **' + t['pt_bef'] + '** 🇵🇹.\n'
         await ctx.send(output)
 
     @_priberam.error

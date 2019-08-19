@@ -71,6 +71,8 @@ class Entry(Query):
         """
         r = self.raw.find('div')
         r = r.find('div')
+        if r == None:
+            return None
         r = r.find('div')
         for match in r.find_all('span', class_='varpt'):
             if match.parent.name == 'span':
@@ -157,7 +159,8 @@ def _trim(value):
 
 
 if __name__ == "__main__":
-    results = Entry('fato')
-    for n, defin in enumerate(results.table_of_contents):
-        print('{}: {}'.format(n + 1, defin))
-        print('{}'.format(results.definitions[n]))
+    results = Entry('bolache')
+    if results.table_of_contents:
+        for n, defin in enumerate(results.table_of_contents):
+            print('{}: {}'.format(n + 1, defin))
+            print('{}'.format(results.definitions[n]))
