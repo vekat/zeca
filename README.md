@@ -29,7 +29,7 @@ Your bot should now appear on your server.
 
     Or if you prefer manual installation:
 
-    ```pip install -U https://github.com/Rapptz/discord.py/archive/rewrite.zip```
+    ```pip install discord.py```
 
     ```pip install bs4```
 
