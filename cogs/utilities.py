@@ -162,36 +162,47 @@ class Utilities(commands.Cog):
         https://www.priberam.pt/
         https://en.wikipedia.org/wiki/Portuguese_Language_Orthographic_Agreement_of_1990
         """
-    results = priberamdict.Entry(entry)
-    output = results.definitions[0]
-    t = results.table_of_contents[0]
-    if t['affect']:
-      output = output + '_Após o acordo ortográfico:_ **' + \
-          t['br_aft'] + '** 🇧🇷, **' + t['pt_aft'] + '** 🇵🇹.\n'
-    else:
-      output = output + '_Grafias:_ **' + \
-          t['br_bef'] + '** 🇧🇷, **' + t['pt_bef'] + '** 🇵🇹.\n'
-    await ctx.send(output)
+        results = priberamdict.Entry(entry)
+        d = results.definitions
+        s = results.suggestions
 
-  @_priberam.error
-  async def __priberam_error(self, ctx, error):
-    await ctx.send(error.__cause__)
+        if d:
+            output = d[0]
+            t = results.table_of_contents[0]
+            if t['affect']:
+                output = output + '_Após o acordo ortográfico:_ **' + \
+                    t['br_aft'] + '** 🇧🇷, **' + t['pt_aft'] + '** 🇵🇹.\n'
+            else:
+                output = output + '_Grafias:_ **' + \
+                    t['br_bef'] + '** 🇧🇷, **' + t['pt_bef'] + '** 🇵🇹.\n'
 
-  @commands.command()
-  async def nick(self, ctx, *, new_nick):
-    """ Changes the nickname of a member. """
-    member = ctx.author
-    await member.edit(nick=new_nick)
+        if isinstance(s, list):
+            output = 'Palavra não encontrada. '
+            if s:
+                output = output + 'Aqui estão algumas sugestões:\n'
+                output = output + ' '.join(s)
 
-  @nick.error
-  async def nick_error(self, ctx, error):
-    if isinstance(error, commands.CommandInvokeError):
-      # await ctx.send(error.__cause__)
-      await ctx.send('I don\'t have permission for that, master.')
+        await ctx.send(output)
 
-  @commands.command(name='correct', aliases=['c'])
-  async def _correct_message(self, ctx, message_id, *, correction):
-    """
+    @_priberam.error
+    async def __priberam_error(self, ctx, error):
+        await ctx.send(error.__cause__)
+
+    @commands.command()
+    async def nick(self, ctx, *, new_nick):
+        """ Changes the nickname of a member. """
+        member = ctx.author
+        await member.edit(nick=new_nick)
+
+    @nick.error
+    async def nick_error(self, ctx, error):
+        if isinstance(error, commands.CommandInvokeError):
+            # await ctx.send(error.__cause__)
+            await ctx.send('I don\'t have permission for that, master.')
+
+    @commands.command(name='correct', aliases=['c'])
+    async def _correct_message(self, ctx, message_id, *, correction):
+        """
         Highlights the mistakes in a members message provided the message ID followed by the correction.
 
         - The author of the message you want to correct must have the "Correct me" role.

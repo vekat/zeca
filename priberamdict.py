@@ -30,12 +30,13 @@ class Query:
             raise ValueError('Entry must contain only' + \
                              ' alphanumeric characters and spaces.')
             
-        self.url = 'https://www.priberam.pt/dlpo/' + \
-                   _urlify(self.term) + '/'
-        r = requests.get(self.url)
+        self.url = 'https://dicionario.priberam.org/' + \
+                   _urlify(self.term)
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36'}
+        r = requests.get(self.url, headers=headers)
         self.code = r.status_code
         if self.code != 200:
-            raise Exception(str(r.status_code) + 'Error')
+            raise Exception('Error ' + str(r.status_code))
         self.content = r.content
 
 
@@ -52,8 +53,7 @@ class Entry(Query):
         super().__init__(term)
         soup = BeautifulSoup(self.content, 'html.parser')
         self.raw = soup.find('div', id='resultados')
-        if self.raw.find('div', class_='alert'):
-            raise ValueError('No results found.')
+        self._suggestions = self.raw.find('div', class_='pb-sugestoes-afastadas')
         
     @property
     def table_of_contents(self):
@@ -71,6 +71,8 @@ class Entry(Query):
         """
         r = self.raw.find('div')
         r = r.find('div')
+        if r == None:
+            return None
         r = r.find('div')
         for match in r.find_all('span', class_='varpt'):
             if match.parent.name == 'span':
@@ -107,6 +109,8 @@ class Entry(Query):
         """
         Returns a list which contains all the definitions found.
         """
+        if self.raw.find('div', class_='alert'):
+            return None
         r = self.raw.find('div')
         r = r.find_all('div', recursive=False)[-1]
         for item in r.find_all('categoria_ext_aao'):
@@ -120,10 +124,23 @@ class Entry(Query):
         r = r.find_all('div', id='', class_='', recursive=False)
         r = list(map(_html_to_markdown, r))
         return r
+        
+    @property
+    def suggestions(self):
+        r = self._suggestions
+        if r == None:
+            return None
+        r = r.find_all('a')
+        r = [_html_to_markdown(v, False) for v in r]
+        r = [v.strip() for v in r]
+        return r
 
 
-def _html_to_markdown(value):
+def _html_to_markdown(value, ignore_images = True):
     h = html2text.HTML2Text()
+    h.ignore_links = True
+    if ignore_images:
+        h.ignore_images = True
     return h.handle(str(value))
 
 
@@ -142,7 +159,8 @@ def _trim(value):
 
 
 if __name__ == "__main__":
-    results = Entry('fato')
-    for n, defin in enumerate(results.table_of_contents):
-        print('{}: {}'.format(n + 1, defin))
-        print('{}'.format(results.definitions[n]))
+    results = Entry('bolache')
+    if results.table_of_contents:
+        for n, defin in enumerate(results.table_of_contents):
+            print('{}: {}'.format(n + 1, defin))
+            print('{}'.format(results.definitions[n]))
