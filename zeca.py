@@ -32,7 +32,7 @@ class Zeca(commands.Bot):
   async def remove_temp_roles(self):
     # removes the hitmeup role from everyone who has it
     guild = self.guilds[0]
-    role = discord.utils.get(guild.roles, name='hitmeup')
+    role = discord.utils.get(guild.roles, name='hit me up')
     try:
       for member in role.members or []:
         await member.remove_roles(role)
