@@ -21,11 +21,11 @@ class Utilities(commands.Cog):
                      'expires in one hour.\nthank you for being part of the ' + \
                      'Portuguese learning and discussion community! :smile:'
   level_roles_aliases = {
-      'newbie': ['0', 'a0', 'new'],
-      'beginner': ['a', 'a1', 'a2'],
-      'intermediate': ['b', 'b1', 'b2'],
-      'advanced': ['c', 'c1', 'c2'],
-      'native': ['native speaker']
+      'newbie': ['0', 'a0', 'new', 'novato'],
+      'beginner': ['a', 'a1', 'a2', 'iniciante'],
+      'intermediate': ['b', 'b1', 'b2', 'intermediário', 'intermediario'],
+      'advanced': ['c', 'c1', 'c2', 'avançado', 'avancado'],
+      'native': ['native speaker', 'nativo']
   }
 
   level_roles = {}
