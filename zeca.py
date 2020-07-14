@@ -28,6 +28,8 @@ class Zeca(commands.Bot):
     print('• logged on as:', self.user)
     print('• discord.py version:', discord.__version__)
 
+    await self.load_blacklist()
+
   async def load_blacklist(self):
     # load blacklisted users
     try:
@@ -37,6 +39,7 @@ class Zeca(commands.Bot):
         print(self.blacklist)
     except FileNotFoundError:
       with open(os.path.join(ROOT, 'blacklist.txt'), 'w') as f:
+        self.blacklist = []
         pass
 
   def check_user(self, ctx):
