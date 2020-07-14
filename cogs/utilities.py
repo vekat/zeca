@@ -3,9 +3,19 @@ import dicinformal
 import priberamdict
 import asyncio
 import re
+import private
+
 from discord.ext import commands
 from highlighter import compare_texts
 from urbandic import UDQuery
+
+
+def inv_dict(d, r, prefix=None):
+  for key, lst in d.items():
+    for val in lst:
+      if prefix:
+        r[prefix + val] = key
+      r[val] = key
 
 
 class Utilities(commands.Cog):
@@ -13,52 +23,18 @@ class Utilities(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
 
-  # Some commands variables are class properties, so it's easier
-  # to access them from higher levels when needed.
-  expired_role_msg = 'your role "hit me up" role has ' + \
-                     'expired on the Portuguese server.\nto renew the role, type `>r hitmeup` ' + \
-                     'in the <#451912364183257089> channel.\ndon\'t forget this role ' + \
-                     'expires in one hour.\nthank you for being part of the ' + \
-                     'Portuguese learning and discussion community! :smile:'
-  level_roles_aliases = {
-      'newbie': ['0', 'a0', 'new', 'novato'],
-      'beginner': ['a', 'a1', 'a2', 'iniciante'],
-      'intermediate': ['b', 'b1', 'b2', 'intermediário', 'intermediario'],
-      'advanced': ['c', 'c1', 'c2', 'avançado', 'avancado'],
-      'native': ['native speaker', 'nativo']
-  }
-
   level_roles = {}
+  country_roles = {}
+  other_roles = {}
 
-  for k, l in level_roles_aliases.items():
-    level_roles[k] = k
-    level_roles['level ' + k] = k
-    for v in l:
-      level_roles[v] = k
-      level_roles['level ' + v] = k
+  inv_dict(private.level_roles_aliases, level_roles, 'level ')
+  inv_dict(private.country_roles_aliases, country_roles)
+  inv_dict(private.other_roles_aliases, other_roles)
 
-  country_roles = {
-      'pt': 'PT',
-      'br': 'BR',
-      'ao': 'AO',
-      'cv': 'CV',
-      'gq': 'GQ',
-      'gw': 'GW',
-      'mo': 'MO',
-      'mz': 'MZ',
-      'st': 'ST',
-      'tl': 'TL'
-  }
-  other_roles = {
-      'hitmeup': 'hit me up',
-      'hit me up': 'hit me up',
-      'notify me': 'notify me',
-      'correct me': 'correct me'
-  }
   public_roles = {**level_roles, **country_roles, **other_roles}
 
   @commands.command(name='role', aliases=['r'])
-  async def _role(self, ctx, *, role):
+  async def _role(self, ctx, *, rolearg):
     """
     Assigns or removes a role.
 
@@ -71,31 +47,26 @@ class Utilities(commands.Cog):
         list:  Shows a list of public roles.
     """
 
-    if role.lower() in list(self.public_roles.keys()):
-      role = self.public_roles[role.lower()]
-      role = await commands.RoleConverter().convert(ctx, role)
+    rolearg = rolearg.lower()
+    if rolearg in list(self.public_roles.keys()):
+      roleid = self.public_roles[rolearg]
+      role = await commands.RoleConverter().convert(ctx, roleid)
       member = ctx.author
       if role in member.roles:
         await member.remove_roles(role)
-        await ctx.send(':white_check_mark: Role removed.')
+        await ctx.send(private.emojis['confirm'] + ' role removed.')
       else:
-        if role.name in list(self.level_roles.values()):
-          for _, r in enumerate(member.roles):
-            if r.name in list(self.level_roles.values()):
+        if roleid in list(self.level_roles.values()):
+          for a, r in enumerate(member.roles):
+            if str(r.id) in list(self.level_roles.values()):
               await member.remove_roles(r)
-        await member.add_roles(role)
-        await ctx.send(':white_check_mark: Role granted.')
-        # Schedules the hitmeup role expiration
-        if role.name == 'hit me up':
-          await asyncio.sleep(3600)
-          if role in member.roles:
-            await member.remove_roles(role)
-            await ctx.author.send(self.expired_role_msg)
 
-    elif role == 'list':
-      output = 'Public roles available:\n' + '```' + \
+        await member.add_roles(role)
+        await ctx.send(private.emojis['confirm'] + ' role granted.')
+    elif rolearg == 'list':
+      output = 'available roles (and aliases):\n' + '```' + \
                ', '.join(
-                   list(dict.fromkeys(self.public_roles.values()))) + '```'
+                   list(dict.fromkeys(self.public_roles.keys()))) + '```'
       await ctx.send(output)
     else:
       raise commands.BadArgument
@@ -104,8 +75,9 @@ class Utilities(commands.Cog):
   async def _role_error(self, ctx, error):
     if isinstance(error, commands.BadArgument):
       await ctx.send(
-          ':exclamation:This role does not exist or is not ' +
-          'public. Check your spelling.'
+          private.emojis['error'] +
+          'this role either does not exist or is not public. ' +
+          'please, check your spelling.'
       )
 
   @commands.command(name='dicinf', aliases=['di', 'dicinformal'])
@@ -126,31 +98,16 @@ class Utilities(commands.Cog):
       embed.set_footer(icon_url=result.favicon, text=result.disclaimer)
       return embed
 
-    def _synonym(entry):
-      return 'synonym of {}'.format(entry)
-
-    def _antonym(entry):
-      return 'antonym of {}'.format(entry)
-
-    # Parse sub-command
-    sub_commands = {'-a': _antonym, '-s': _synonym}
-    sub_command = [i for i in term if i in list(sub_commands.keys())]
-    if sub_command:
-      sub_command = sub_command[0]
-      term = list(term)
-      term.remove(sub_command)
-      term = ' '.join(term)
-      await ctx.send(sub_commands[sub_command](term))
-    # Default command
-    else:
-      term = ' '.join(term)
-      await ctx.send(embed=_meaning(term))
+    term = ' '.join(term)
+    commands_channel = self.bot.get_channel(int(private.welcome))
+    await commands_channel.send(ctx.author.mention, embed=_meaning(term))
 
   @_dicionarioinformal.error
   async def _dicionarioinformal_error(self, ctx, error):
     if isinstance(error, commands.CommandInvokeError):
+      pass
       # await ctx.send(error.__cause__)
-      await ctx.send(':exclamation: No results found.')
+      # await ctx.send(':exclamation: no results found.')
 
   @commands.command(name='priberam', aliases=['pri'])
   async def _priberam(self, ctx, *, entry):
@@ -183,23 +140,12 @@ class Utilities(commands.Cog):
         output = output + 'Aqui estão algumas sugestões:\n'
         output = output + ' '.join(s)
 
-    await ctx.send(output)
+    commands_channel = self.bot.get_channel(int(private.welcome))
+    await commands_channel.send(ctx.author.mention + '\n' + output)
 
   @_priberam.error
   async def __priberam_error(self, ctx, error):
-    await ctx.send(error.__cause__)
-
-  @commands.command()
-  async def nick(self, ctx, *, new_nick):
-    """ Changes the nickname of a member. """
-    member = ctx.author
-    await member.edit(nick=new_nick)
-
-  @nick.error
-  async def nick_error(self, ctx, error):
-    if isinstance(error, commands.CommandInvokeError):
-      # await ctx.send(error.__cause__)
-      await ctx.send('I don\'t have permission for that, master.')
+    pass
 
   @commands.command(name='correct', aliases=['c'])
   async def _correct_message(self, ctx, message_id, *, correction):
@@ -245,7 +191,9 @@ class Utilities(commands.Cog):
         color=0x3498DB
     )
     embed.set_footer(icon_url=query.favicon, text=query.disclaimer)
-    await ctx.send(embed=embed)
+
+    commands_channel = self.bot.get_channel(int(private.welcome))
+    await commands_channel.send(ctx.author.mention, embed=embed)
 
 
 def setup(bot):
