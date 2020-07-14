@@ -2,14 +2,15 @@ import sys
 import os
 import re
 import time
-from datetime import datetime
+import signal
 
 import discord
 import asyncio
 
-from discord.ext import commands
-
 import private
+
+from datetime import datetime
+from discord.ext import commands
 from cogs import utilities
 
 ROOT = os.path.dirname(sys.modules['__main__'].__file__)
@@ -27,26 +28,13 @@ class Zeca(commands.Bot):
     print('• logged on as:', self.user)
     print('• discord.py version:', discord.__version__)
 
-    await self.remove_temp_roles()
-
-  async def remove_temp_roles(self):
-    # removes the hitmeup role from everyone who has it
-    guild = self.guilds[0]
-    role = discord.utils.get(guild.roles, name='hit me up')
-    try:
-      for member in role.members or []:
-        await member.remove_roles(role)
-        await member.send(utilities.Utilities.expired_role_msg)
-    except discord.DiscordException:
-      pass  # ignores this if no one has the hitmeup role
-
   async def load_blacklist(self):
     # load blacklisted users
     try:
       with open(os.path.join(ROOT, 'blacklist.txt')) as f:
         self.blacklist = [int(i.strip()) for i in f.readlines()]
         print('blacklisted IDs:')
-        print(blacklist)
+        print(self.blacklist)
     except FileNotFoundError:
       with open(os.path.join(ROOT, 'blacklist.txt'), 'w') as f:
         pass
@@ -74,8 +62,7 @@ class Zeca(commands.Bot):
     embed = discord.Embed(
         title="<:pt:589471198107402240> Getting started",
         colour=discord.Colour(0x9b3a),
-        description="Please, read our " +
-        rules_channel.mention,
+        description="Please, read our " + rules_channel.mention,
         timestamp=datetime.utcfromtimestamp(time.time())
     )
 
@@ -93,7 +80,18 @@ class Zeca(commands.Bot):
       )
 
 
+def exit_gracefully(signum, frame):
+  signal.signal(signal.SIGINT, original_sigint)
+
+  bot.close()
+  sys.exit()
+
+  signal.signal(signal.SIGINT, exit_gracefully)
+
 if __name__ == '__main__':
+  original_sigint = signal.getsignal(signal.SIGINT)
+  signal.signal(signal.SIGINT, exit_gracefully)
+
   bot = Zeca(
       command_prefix='>',
       activity=discord.Activity(
