@@ -72,23 +72,23 @@ class Zeca(commands.Bot):
       return
 
     embed = discord.Embed(
-        title="<:pt:589471198107402240> While you wait...",
+        title="<:pt:589471198107402240> Getting started",
         colour=discord.Colour(0x9b3a),
-        description="You might want to read our rules in " +
+        description="Please, read our " +
         rules_channel.mention,
         timestamp=datetime.utcfromtimestamp(time.time())
     )
 
     embed.add_field(
-        name="Getting started",
+        name="Get your roles",
         value=
-        "• First get a proficiency role in <#607329738012491793>\n• Then an optional dialect role in <#607330935133700146>\n\nOr type role commands here, as explained in "
+        "• First get a proficiency role in <#607329738012491793>\n• Then an optional dialect role in <#607330935133700146>\n\nOr type *role commands* here, as explained in "
         + roles_channel.mention
     )
 
     if welcome_channel:
       await welcome_channel.send(
-          content="Hi " + member.mention + ", welcome to **Portuguese**",
+          content="Oi " + member.mention + ", welcome to **Portuguese**",
           embed=embed
       )
 
