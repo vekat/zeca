@@ -54,7 +54,7 @@ class Utilities(commands.Cog):
       member = ctx.author
       if role in member.roles:
         await member.remove_roles(role)
-        await ctx.send(private.emojis['confirm'] + ' role removed.')
+        await ctx.send(private.emojis['confirm'] + ' cargo adicionado.')
       else:
         if roleid in list(self.level_roles.values()):
           for a, r in enumerate(member.roles):
@@ -62,9 +62,9 @@ class Utilities(commands.Cog):
               await member.remove_roles(r)
 
         await member.add_roles(role)
-        await ctx.send(private.emojis['confirm'] + ' role granted.')
+        await ctx.send(private.emojis['confirm'] + ' cargo removido.')
     elif rolearg == 'list':
-      output = 'available roles (and aliases):\n' + '```' + \
+      output = 'cargos disponíveis (e aliases):\n' + '```' + \
                ', '.join(
                    list(dict.fromkeys(self.public_roles.keys()))) + '```'
       await ctx.send(output)
@@ -76,8 +76,8 @@ class Utilities(commands.Cog):
     if isinstance(error, commands.BadArgument):
       await ctx.send(
           private.emojis['error'] +
-          'this role either does not exist or is not public. ' +
-          'please, check your spelling.'
+          ' esse cargo ou não existe, ou não é público.' +
+          ' *please, check your spelling*.'
       )
 
   @commands.command(name='dicinf', aliases=['di', 'dicinformal'])
