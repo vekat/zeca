@@ -54,7 +54,7 @@ class Utilities(commands.Cog):
       member = ctx.author
       if role in member.roles:
         await member.remove_roles(role)
-        await ctx.send(private.emojis['confirm'] + ' cargo adicionado.')
+        await ctx.send(private.emojis['confirm'] + ' cargo removido.')
       else:
         if roleid in list(self.level_roles.values()):
           for a, r in enumerate(member.roles):
@@ -62,7 +62,7 @@ class Utilities(commands.Cog):
               await member.remove_roles(r)
 
         await member.add_roles(role)
-        await ctx.send(private.emojis['confirm'] + ' cargo removido.')
+        await ctx.send(private.emojis['confirm'] + ' cargo adicionado.')
     elif rolearg == 'list':
       output = 'cargos disponíveis (e aliases):\n' + '```' + \
                ', '.join(
