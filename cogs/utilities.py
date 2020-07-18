@@ -101,6 +101,9 @@ class Utilities(commands.Cog):
 
   @_role.error
   async def _role_error(self, ctx, error):
+    if isinstance(error, commands.CommandOnCooldown):
+      return await ctx.message.add_reaction('⏲️')
+
     await ctx.message.add_reaction(self.error_emoji)
 
     if isinstance(error, commands.BadArgument):
@@ -133,6 +136,9 @@ class Utilities(commands.Cog):
 
   @_dicionarioinformal.error
   async def _dicionarioinformal_error(self, ctx, error):
+    if isinstance(error, commands.CommandOnCooldown):
+      return await ctx.message.add_reaction('⏲️')
+
     await ctx.message.add_reaction(self.error_emoji)
 
   @commands.command(name='priberam', aliases=['pri'])
@@ -171,6 +177,9 @@ class Utilities(commands.Cog):
 
   @_priberam.error
   async def _priberam_error(self, ctx, error):
+    if isinstance(error, commands.CommandOnCooldown):
+      return await ctx.message.add_reaction('⏲️')
+
     await ctx.message.add_reaction(self.error_emoji)
 
   @commands.command(name='correct', aliases=['c'])
@@ -223,6 +232,9 @@ class Utilities(commands.Cog):
 
   @_urbandictionary.error
   async def _urbandictionary_error(self, ctx, error):
+    if isinstance(error, commands.CommandOnCooldown):
+      return await ctx.message.add_reaction('⏲️')
+
     await ctx.message.add_reaction(self.error_emoji)
 
   def to_source(arg):
@@ -297,6 +309,9 @@ class Utilities(commands.Cog):
 
   @define.error
   async def define_error(self, ctx, error):
+    if isinstance(error, commands.CommandOnCooldown):
+      return await ctx.message.add_reaction('⏲️')
+
     await ctx.message.add_reaction(self.error_emoji)
 
 
