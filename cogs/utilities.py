@@ -236,7 +236,7 @@ class Utilities(commands.Cog):
   @commands.command(
       aliases=['definição', 'defina', 'definicao', 'definition', 'def', 'd']
   )
-  @commands.cooldown(2, 60.0, commands.BucketType.user)
+  @commands.cooldown(3, 60.0, commands.BucketType.user)
   async def define(
       self,
       ctx,
@@ -263,7 +263,7 @@ class Utilities(commands.Cog):
       result = ds.priberam(qry_term)
 
     if result is None or len(result.entries) == 0:
-      return await ctx.message.add_reaction(self.error_emoji)
+      raise commands.BadArgument
 
     await ctx.message.add_reaction(self.done_emoji)
 
@@ -294,6 +294,10 @@ class Utilities(commands.Cog):
     await ctx.send(
         f'{ctx.author.mention}, “{qry_term}” no {src_name}:', embed=embed
     )
+
+  @define.error
+  async def define_error(self, ctx, error):
+    await ctx.message.add_reaction(self.error_emoji)
 
 
 def setup(bot):
