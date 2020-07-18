@@ -9,7 +9,8 @@ class Zoeira(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
 
-  @commands.command(name='ban', aliases=[])
+  @commands.command(name='ban', aliases=['banir'])
+  @commands.cooldown(2, 60.0, commands.BucketType.user)
   async def _ban(self, ctx, *, member: discord.Member):
     """For the craic."""
 
@@ -41,6 +42,7 @@ class Zoeira(commands.Cog):
     await ctx.send(message)
 
   @commands.command(name='beijunda', aliases=['bd'])
+  @commands.cooldown(2, 60.0, commands.BucketType.user)
   async def _beijunda(self, ctx, *, member: discord.Member):
     """Manda um beijunda para alguém."""
 

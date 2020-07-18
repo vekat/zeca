@@ -37,6 +37,19 @@ class Utilities(commands.Cog):
 
   public_roles = {**level_roles, **country_roles, **other_roles}
 
+  @commands.Cog.listener()
+  async def on_ready(self):
+    guild = self.bot.guilds[0]
+
+    self.done_emoji = '👍'
+    self.error_emoji = '👎'
+
+    for e in guild.emojis:
+      if e.id == private.emojis['error']:
+        self.error_emoji = e
+      elif e.id == private.emojis['confirm']:
+        self.done_emoji = e
+
   @commands.command(name='role', aliases=['r'])
   async def _role(self, ctx, *, rolearg):
     """
@@ -45,13 +58,11 @@ class Utilities(commands.Cog):
     If role is a level role (Level A, Level B, Level C, or Native),
     the previous level will be automatically removed.
 
-    The role 'hit me up' expires after 1 hour.
-
     Sub-command:
         list:  Shows a list of public roles.
     """
-
     rolearg = rolearg.lower()
+
     if rolearg in list(self.public_roles.keys()):
       roleid = self.public_roles[rolearg]
       role = await commands.RoleConverter().convert(ctx, roleid)
@@ -205,11 +216,12 @@ class Utilities(commands.Cog):
         'priberam': ['p', 'pr', 'pri'],
     }
     inv_source_dicts = {v: k for k, vs in source_dicts.items() for v in vs}
-    return inv_source_dicts[arg]
+    return inv_source_dicts[arg.lower()]
 
   @commands.command(
       aliases=['definição', 'defina', 'definicao', 'definition', 'def', 'd']
   )
+  @commands.cooldown(2, 60.0, commands.BucketType.user)
   async def define(
       self,
       ctx,
@@ -236,9 +248,9 @@ class Utilities(commands.Cog):
       result = ds.priberam(qry_term)
 
     if result is None or len(result.entries) == 0:
-      return await ctx.message.add_reaction(private.emojis['error'])
+      return await ctx.message.add_reaction(self.error_emoji)
 
-    await ctx.message.add_reaction(private.emojis['confirm'])
+    await ctx.message.add_reaction(self.done_emoji)
 
     num_ents = len(result.entries)
     ent_idx = max(1, min(num_ents, ent_num))

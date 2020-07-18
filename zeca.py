@@ -11,7 +11,6 @@ import private
 
 from datetime import datetime
 from discord.ext import commands
-from cogs import utilities
 
 ROOT = os.path.dirname(sys.modules['__main__'].__file__)
 name_filter = re.compile(r'discord\.gg/\S+', re.I)
@@ -90,6 +89,7 @@ def exit_gracefully(signum, frame):
   sys.exit()
 
   signal.signal(signal.SIGINT, exit_gracefully)
+
 
 if __name__ == '__main__':
   original_sigint = signal.getsignal(signal.SIGINT)
