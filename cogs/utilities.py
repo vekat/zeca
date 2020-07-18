@@ -1,9 +1,13 @@
 import discord
 import dicinformal
 import priberamdict
+import dictionary_scraper as ds
 import asyncio
 import re
 import private
+
+from typing import Optional
+from typing_extensions import Literal
 
 from discord.ext import commands
 from highlighter import compare_texts
@@ -194,6 +198,75 @@ class Utilities(commands.Cog):
 
     commands_channel = self.bot.get_channel(int(private.welcome))
     await commands_channel.send(ctx.author.mention, embed=embed)
+
+  def to_source(arg):
+    source_dicts = {
+        'dicio': ['d', 'di', 'dic'],
+        'priberam': ['p', 'pr', 'pri'],
+    }
+    inv_source_dicts = {v: k for k, vs in source_dicts.items() for v in vs}
+    return inv_source_dicts[arg]
+
+  @commands.command(
+      aliases=['definição', 'defina', 'definicao', 'definition', 'def', 'd']
+  )
+  async def define(
+      self,
+      ctx,
+      src_dict: Optional[to_source] = 'dicio',
+      def_num: Optional[int] = 1,
+      ent_num: Optional[int] = 1,
+      *,
+      qry_term='nada'
+  ):
+    """
+    Finds a word definition from online dictionaries.
+
+    Supported dictionaries:
+    - Dicio (`>define [d | di | dic]`)
+    - Priberam (`>define [p | pr | pri]`) 
+    """
+    if src_dict == 'dicio':
+      src_icon = 'https://i.imgur.com/VaE8x5G.png'
+      src_name = 'Dicio'
+      result = ds.dicio(qry_term)
+    else:
+      src_icon = 'https://i.imgur.com/Uj6eUTh.png'
+      src_name = 'Priberam'
+      result = ds.priberam(qry_term)
+
+    if result is None or len(result.entries) == 0:
+      return await ctx.message.add_reaction(private.emojis['error'])
+
+    await ctx.message.add_reaction(private.emojis['confirm'])
+
+    num_ents = len(result.entries)
+    ent_idx = max(1, min(num_ents, ent_num))
+
+    entry = result.entries[ent_idx - 1]
+
+    terms = ' | '.join([f':flag_{k}: {v}' for k, v in entry.terms.items()])
+
+    all_defs = entry.definitions.values()
+    defs = [d for ds in all_defs for d in ds]
+
+    num_defs = len(defs)
+    def_idx = max(1, min(num_defs, def_num))
+
+    embed = discord.Embed(
+        title=result.query,
+        url=result.source,
+        description=terms + ' ⇒ ' + defs[def_idx - 1],
+        color=0x3498DB
+    )
+    embed.set_footer(
+        text=f'entrada {ent_idx}/{num_ents}, definição {def_idx}/{num_defs}',
+        icon_url=src_icon
+    )
+
+    await ctx.send(
+        f'{ctx.author.mention}, “{qry_term}” no {src_name}:', embed=embed
+    )
 
 
 def setup(bot):
