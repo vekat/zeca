@@ -39,8 +39,9 @@ class Utilities(commands.Cog):
 
   @commands.Cog.listener()
   async def on_ready(self):
-    guild = self.bot.guilds[0]
+    self.commands_channel = self.bot.get_channel(int(private.welcome))
 
+    guild = self.bot.guilds[0]
     self.done_emoji = '👍'
     self.error_emoji = '👎'
 
@@ -50,8 +51,12 @@ class Utilities(commands.Cog):
       elif e.id == private.emojis['confirm']:
         self.done_emoji = e
 
+  def to_lower(arg):
+    return arg.lower()
+
   @commands.command(name='role', aliases=['r'])
-  async def _role(self, ctx, *, rolearg):
+  @commands.cooldown(4, 60.0, commands.BucketType.user)
+  async def _role(self, ctx, *, args: to_lower):
     """
     Assigns or removes a role.
 
@@ -61,15 +66,16 @@ class Utilities(commands.Cog):
     Sub-command:
         list:  Shows a list of public roles.
     """
-    rolearg = rolearg.lower()
+    output = None
 
-    if rolearg in list(self.public_roles.keys()):
-      roleid = self.public_roles[rolearg]
+    if args in list(self.public_roles.keys()):
+      roleid = self.public_roles[args]
       role = await commands.RoleConverter().convert(ctx, roleid)
       member = ctx.author
+
       if role in member.roles:
         await member.remove_roles(role)
-        await ctx.send(private.emojis['confirm'] + ' cargo removido.')
+        output = f'cargo `{role.name}` removido'
       else:
         if roleid in list(self.level_roles.values()):
           for a, r in enumerate(member.roles):
@@ -77,26 +83,36 @@ class Utilities(commands.Cog):
               await member.remove_roles(r)
 
         await member.add_roles(role)
-        await ctx.send(private.emojis['confirm'] + ' cargo adicionado.')
-    elif rolearg == 'list':
+        output = f'cargo `{role.name}` adicionado'
+    elif args == 'list':
       output = 'cargos disponíveis (e aliases):\n' + '```' + \
                ', '.join(
                    list(dict.fromkeys(self.public_roles.keys()))) + '```'
-      await ctx.send(output)
-    else:
+
+    if output is None:
       raise commands.BadArgument
+
+    await ctx.message.add_reaction(self.done_emoji)
+
+    if ctx.message.channel.id == self.commands_channel.id:
+      await self.commands_channel.send(output)
+    else:
+      await self.commands_channel.send(f'{ctx.author.mention}, {output}')
 
   @_role.error
   async def _role_error(self, ctx, error):
+    await ctx.message.add_reaction(self.error_emoji)
+
     if isinstance(error, commands.BadArgument):
-      await ctx.send(
-          private.emojis['error'] +
-          ' esse cargo ou não existe, ou não é público.' +
-          ' *please, check your spelling*.'
-      )
+      output = 'esse cargo ou não existe, ou não é público.\n*please, check your spelling*.'
+      if ctx.message.channel.id == self.commands_channel.id:
+        await self.commands_channel.send(output)
+      else:
+        await self.commands_channel.send(f'{ctx.author.mention}, {output}')
 
   @commands.command(name='dicinf', aliases=['di', 'dicinformal'])
-  async def _dicionarioinformal(self, ctx, *term):
+  @commands.cooldown(2, 60.0, commands.BucketType.user)
+  async def _dicionarioinformal(self, ctx, *, term):
     """
     Looks a word up in the Dicionário Informal.
 
@@ -107,24 +123,20 @@ class Utilities(commands.Cog):
       embed = discord.Embed(
           title=result.term,
           url=result.url,
-          description=result.description,
+          description=f'||{result.description}||',
           color=0x3498DB
       )
       embed.set_footer(icon_url=result.favicon, text=result.disclaimer)
       return embed
 
-    term = ' '.join(term)
-    commands_channel = self.bot.get_channel(int(private.welcome))
-    await commands_channel.send(ctx.author.mention, embed=_meaning(term))
+    await self.commands_channel.send(ctx.author.mention, embed=_meaning(term))
 
   @_dicionarioinformal.error
   async def _dicionarioinformal_error(self, ctx, error):
-    if isinstance(error, commands.CommandInvokeError):
-      pass
-      # await ctx.send(error.__cause__)
-      # await ctx.send(':exclamation: no results found.')
+    await ctx.message.add_reaction(self.error_emoji)
 
   @commands.command(name='priberam', aliases=['pri'])
+  @commands.cooldown(2, 60.0, commands.BucketType.user)
   async def _priberam(self, ctx, *, entry):
     """
     Looks up a word in the Priberam Portuguese dictionary.
@@ -155,12 +167,11 @@ class Utilities(commands.Cog):
         output = output + 'Aqui estão algumas sugestões:\n'
         output = output + ' '.join(s)
 
-    commands_channel = self.bot.get_channel(int(private.welcome))
-    await commands_channel.send(ctx.author.mention + '\n' + output)
+    await self.commands_channel.send(ctx.author.mention + '\n' + output)
 
   @_priberam.error
-  async def __priberam_error(self, ctx, error):
-    pass
+  async def _priberam_error(self, ctx, error):
+    await ctx.message.add_reaction(self.error_emoji)
 
   @commands.command(name='correct', aliases=['c'])
   async def _correct_message(self, ctx, message_id, *, correction):
@@ -192,6 +203,7 @@ class Utilities(commands.Cog):
     await ctx.message.delete()
 
   @commands.command(name='urbandictionary', aliases=['urban', 'ud'])
+  @commands.cooldown(2, 60.0, commands.BucketType.user)
   async def _urbandictionary(self, ctx, *, entry):
     """
     Look up a word in the Urban Dictionary.
@@ -202,13 +214,16 @@ class Utilities(commands.Cog):
     embed = discord.Embed(
         title=query.entry,
         url=query.permalink,
-        description=definition,
+        description=f'||{definition}||',
         color=0x3498DB
     )
     embed.set_footer(icon_url=query.favicon, text=query.disclaimer)
 
-    commands_channel = self.bot.get_channel(int(private.welcome))
-    await commands_channel.send(ctx.author.mention, embed=embed)
+    await self.commands_channel.send(ctx.author.mention, embed=embed)
+
+  @_urbandictionary.error
+  async def _urbandictionary_error(self, ctx, error):
+    await ctx.message.add_reaction(self.error_emoji)
 
   def to_source(arg):
     source_dicts = {
