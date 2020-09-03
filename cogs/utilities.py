@@ -27,6 +27,8 @@ class Utilities(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
 
+    self.member_role = private.member_role
+
   level_roles = {}
   country_roles = {}
   other_roles = {}
@@ -42,6 +44,10 @@ class Utilities(commands.Cog):
     self.commands_channel = self.bot.get_channel(int(private.welcome))
 
     guild = self.bot.guilds[0]
+
+    if type(self.member_role) is int:
+      self.member_role = guild.get_role(self.member_role)
+
     self.done_emoji = '👍'
     self.error_emoji = '👎'
 
@@ -82,12 +88,10 @@ class Utilities(commands.Cog):
             if str(r.id) in list(self.level_roles.values()):
               await member.remove_roles(r)
 
-        await member.add_roles(role)
+        await member.add_roles(role, self.member_role)
         output = f'cargo `{role.name}` adicionado'
     elif args == 'list':
-      output = 'cargos disponíveis (e aliases):\n' + '```' + \
-               ', '.join(
-                   list(dict.fromkeys(self.public_roles.keys()))) + '```'
+      output = f"cargos disponíveis:\n```{', '.join(list(dict.fromkeys(self.public_roles.keys())))}```"
 
     if output is None:
       raise commands.BadArgument
