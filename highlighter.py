@@ -21,9 +21,9 @@ def compare_texts(original_text, corrected_text):
         if c == '   ':
             mistakes.append(' ')
             correction.append(' ')
-        elif c[0] is '+':
+        elif c[0] == '+':
             correction.append('**{}**'.format(c[-1]))
-        elif c[0] is '-':
+        elif c[0] == '-':
             mistakes.append('~~{}~~'.format(c[-1]))
         else:
             mistakes.append(c[-1])
