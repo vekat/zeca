@@ -15,6 +15,8 @@ from discord.ext import commands
 ROOT = os.path.dirname(sys.modules['__main__'].__file__)
 name_filter = re.compile(r'discord\.gg/\S+', re.I)
 
+intents = discord.Intents.default()
+intents.members = True
 
 class Zeca(commands.Bot):
   def __init__(self, **kwargs):
@@ -97,6 +99,7 @@ if __name__ == '__main__':
 
   bot = Zeca(
       command_prefix='>',
+      intents=intents,
       activity=discord.Activity(
           name='Never gonna give you up', type=discord.ActivityType.listening
       )
@@ -107,7 +110,8 @@ if __name__ == '__main__':
   for e in extensions:
     try:
       bot.load_extension(e)
-    except:
+    except Exception as err:
       print('• failed to load {}'.format(e))
+      print(err)
 
   bot.run(private.TOKEN)
