@@ -28,6 +28,7 @@ class Utilities(commands.Cog):
     self.bot = bot
 
     self.member_role = private.member_role
+    self.commands_channel = private.commands
 
   level_roles = {}
   country_roles = {}
@@ -41,7 +42,8 @@ class Utilities(commands.Cog):
 
   @commands.Cog.listener()
   async def on_ready(self):
-    self.commands_channel = self.bot.get_channel(int(private.welcome))
+    if type(self.commands_channel) is int:
+      self.commands_channel = self.bot.get_channel(self.commands_channel)
 
     guild = self.bot.guilds[0]
 
