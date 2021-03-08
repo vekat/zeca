@@ -28,6 +28,7 @@ class Utilities(commands.Cog):
     self.bot = bot
 
     self.member_role = private.member_role
+    self.nolevel_role = private.nolevel_role
     self.commands_channel = private.commands
 
   level_roles = {}
@@ -49,6 +50,9 @@ class Utilities(commands.Cog):
 
     if type(self.member_role) is int:
       self.member_role = guild.get_role(self.member_role)
+
+    if type(self.nolevel_role) is int:
+      self.nolevel_role = guild.get_role(self.nolevel_role)
 
     self.done_emoji = '👍'
     self.error_emoji = '👎'
@@ -83,11 +87,13 @@ class Utilities(commands.Cog):
 
       if role in member.roles:
         await member.remove_roles(role)
+        if roleid in list(self.level_roles.values()):
+          await member.add_roles(self.nolevel_role)
         output = f'cargo `{role.name}` removido'
       else:
         if roleid in list(self.level_roles.values()):
           for a, r in enumerate(member.roles):
-            if str(r.id) in list(self.level_roles.values()):
+            if str(r.id) in list(self.level_roles.values()) + [self.nolevel_role.id]:
               await member.remove_roles(r)
 
         await member.add_roles(role, self.member_role)
