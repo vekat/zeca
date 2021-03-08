@@ -93,8 +93,10 @@ class Utilities(commands.Cog):
       else:
         if roleid in list(self.level_roles.values()):
           for a, r in enumerate(member.roles):
-            if str(r.id) in list(self.level_roles.values()) + [self.nolevel_role.id]:
+            if str(r.id) in list(self.level_roles.values()):
               await member.remove_roles(r)
+          if self.nolevel_role in member.roles:
+            await member.remove_roles(self.nolevel_role)
 
         await member.add_roles(role, self.member_role)
         output = f'cargo `{role.name}` adicionado'
