@@ -1,6 +1,9 @@
 # Bot's private info
 private.py
 
+# Bot's user blocklist
+blocklist.txt
+
 # Code Editors
 .idea/
 .vscode/
