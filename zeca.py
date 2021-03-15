@@ -7,7 +7,8 @@ import signal
 import discord
 import asyncio
 
-import private
+from private import TOKEN
+from constants import *
 
 from pathlib import Path
 from datetime import datetime
@@ -25,62 +26,75 @@ class Zeca(commands.Bot):
 
     self.name_filter = re.compile(r'discord\.gg/\S+', re.I)
 
-    self.main_guild = private.guild
-    self.dialect_channel = private.dialect
-    self.proficiency_channel = private.proficiency
-    self.welcome_hook = private.welcome
+    self.main_guild = None
+    self.dialect_channel = None
+    self.proficiency_channel = None
+    self.welcome_hook = None
 
-    self.setup_blacklist()
+    self.setup_blocklist()
     self.add_check(self.is_main_guild)
 
-  def setup_blacklist(self):
-    self.blacklist_path = private.blacklist_path
-    self.load_blacklist()
-    self.add_check(self.is_not_blacklisted)
+  def setup_blocklist(self):
+    self.blocklist_path = blocklist_path
+    self.load_blocklist()
+    self.add_check(self.is_not_blocklisted)
 
-  def load_blacklist(self):
-    blp = Path(self.blacklist_path)
-    if not blp.exists():
-      blp.touch()
+  def load_blocklist(self):
+    blocklist_path = Path(self.blocklist_path)
+    if not blocklist_path.exists():
+      blocklist_path.touch()
 
-    with blp.open() as blf:
-      self.blacklisted_ids = [int(l.strip()) for l in blf.readlines()]
+    with blocklist_path.open() as blocklist_file:
+      self.blocklisted_ids = [int(l.strip()) for l in blocklist_file.readlines()]
 
   def is_main_guild(self, ctx):
-    return ctx.guild and ctx.guild.id == self.main_guild.id
+    try:
+      return ctx.guild and ctx.guild.id == self.main_guild.id
+    except AttributeError:
+      print('Looks like your guild id is configured incorrectly.')
 
-  def is_not_blacklisted(self, ctx):
-    return ctx.author and ctx.author.id not in self.blacklisted_ids
+
+  def is_not_blocklisted(self, ctx):
+    return ctx.author and ctx.author.id not in self.blocklisted_ids
 
   async def on_ready(self):
     print(f'→ login successful as: {self.user}')
     print(f'→ discord.py version: {discord.__version__}')
 
-    if type(self.welcome_hook) is int:
-      self.welcome_hook = await self.fetch_webhook(self.welcome_hook)
+    if not self.main_guild:
+      self.main_guild = self.get_guild(guild_id)
+      if not self.main_guild:
+        print('The guild/server was not found. Check the guild id.')
 
-    if type(self.main_guild) is int:
-      self.main_guild = self.get_guild(self.main_guild)
+    if not self.welcome_hook:
+      try:
+        self.welcome_hook = await self.fetch_webhook(welcome_webhook_id)
+      except:
+        print('The welcome webhook was not found!')
 
-    if type(self.dialect_channel) is int:
-      self.dialect_channel = self.get_channel(self.dialect_channel)
+    if not self.dialect_channel:
+      self.dialect_channel = self.get_channel(channels['dialect'])
+      if not self.dialect_channel:
+        print('The dialect channel was not found. Check the id.')
 
-    if type(self.proficiency_channel) is int:
-      self.proficiency_channel = self.get_channel(self.proficiency_channel)
+    if not self.proficiency_channel:
+      self.proficiency_channel = self.get_channel(channels['proficiency'])
+      if not self.proficiency_channel:
+        print('The proficiency channel was not found. Check the id.')
 
   async def on_member_join(self, member):
     member_id = member.id
     member_name = str(member)
     if self.name_filter.findall(member_name):
-      return await member.ban(reason=f'[{self.user}] blacklisted name')
+      return await member.ban(reason=f'[{self.user}] blocklisted name')
 
-    await asyncio.sleep(private.welcome_delay)
+    await asyncio.sleep(welcome_delay)
 
     if not self.main_guild.get_member(member_id):
       return
 
     return await self.welcome_hook.send(
-        content=private.welcome_message.format(client=self, member=member)
+      content=welcome_message.format(client=self, member=member)
     )
 
 
@@ -114,4 +128,4 @@ if __name__ == '__main__':
       print(f'→ error loading extension {ext}')
       print(err)
 
-  bot.run(private.TOKEN)
+  bot.run(TOKEN)
