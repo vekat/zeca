@@ -88,9 +88,10 @@ def exit_gracefully(signum, frame):
   signal.signal(signal.SIGINT, original_sigint)
 
   bot.close()
-  sys.exit()
 
   signal.signal(signal.SIGINT, exit_gracefully)
+  
+  sys.exit()
 
 
 if __name__ == '__main__':
@@ -102,10 +103,16 @@ if __name__ == '__main__':
       intents=intents,
       activity=discord.Activity(
           name='Never gonna give you up', type=discord.ActivityType.listening
+      ),
+      allowed_mentions=discord.AllowedMentions(
+        users=True,
+        everyone=False,
+        roles=False,
+        replied_user=True,
       )
   )
 
-  exts = ['cogs.moderator', 'cogs.utilities', 'cogs.zoeira']
+  exts = ['cogs.utilities']
 
   for ext in exts:
     try:
