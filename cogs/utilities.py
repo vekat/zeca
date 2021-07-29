@@ -109,7 +109,7 @@ class Utilities(commands.Cog):
     await ctx.message.add_reaction(self.done_emoji)
 
     if ctx.message.channel.id == self.commands_channel.id:
-      await self.commands_channel.send(output)
+      await self.commands_channel.send(output, reference=ctx.message)
     else:
       await self.commands_channel.send(f'{ctx.author.mention}, {output}')
 
@@ -123,7 +123,7 @@ class Utilities(commands.Cog):
     if isinstance(error, commands.BadArgument):
       output = 'esse cargo ou não existe, ou não é público.\n*please, check your spelling*.'
       if ctx.message.channel.id == self.commands_channel.id:
-        await self.commands_channel.send(output)
+        await self.commands_channel.send(output, reference=ctx.message)
       else:
         await self.commands_channel.send(f'{ctx.author.mention}, {output}')
 
@@ -270,7 +270,7 @@ class Utilities(commands.Cog):
       def_num: Optional[int] = 1,
       ent_num: Optional[int] = 1,
       *,
-      qry_term='nada'
+      qry_term = 'nada'
   ):
     """
     Finds a word definition from online dictionaries.
@@ -318,7 +318,7 @@ class Utilities(commands.Cog):
     )
 
     await ctx.send(
-        f'{ctx.author.mention}, “{qry_term}” no {src_name}:', embed=embed
+        f'Definição de “{result.query}” no {src_name}:', embed=embed, reference=ctx.message
     )
 
   @define.error
