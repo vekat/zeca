@@ -4,7 +4,8 @@ import priberamdict
 import dictionary_scraper as ds
 import asyncio
 import re
-import private
+
+from constants import *
 
 from typing import Optional
 from typing_extensions import Literal
@@ -27,17 +28,17 @@ class Utilities(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
 
-    self.member_role = private.member_role
-    self.nolevel_role = private.nolevel_role
-    self.commands_channel = private.commands
+    self.member_role = roles['member']
+    self.nolevel_role = roles['nolevel']
+    self.commands_channel = channels['commands']
 
   level_roles = {}
   country_roles = {}
   other_roles = {}
 
-  inv_dict(private.level_roles_aliases, level_roles, 'level ')
-  inv_dict(private.country_roles_aliases, country_roles)
-  inv_dict(private.other_roles_aliases, other_roles)
+  inv_dict(level_roles_aliases, level_roles, 'level ')
+  inv_dict(country_roles_aliases, country_roles)
+  inv_dict(other_roles_aliases, other_roles)
 
   public_roles = {**level_roles, **country_roles, **other_roles}
 
@@ -58,9 +59,9 @@ class Utilities(commands.Cog):
     self.error_emoji = '👎'
 
     for e in guild.emojis:
-      if e.id == private.emojis['error']:
+      if e.id == emojis['error']:
         self.error_emoji = e
-      elif e.id == private.emojis['confirm']:
+      elif e.id == emojis['confirm']:
         self.done_emoji = e
 
   def to_lower(arg):

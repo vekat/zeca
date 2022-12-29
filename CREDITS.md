@@ -1,5 +1,5 @@
 Credits
 =======
   - Zeca v0
-    * [Fulano](https://github.com/fulano25)
+    * [Saulo Dias :)](https://github.com/saulodias)
     * [Vitor Cortez](https://github.com/vekat)
